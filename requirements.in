@@ -1,0 +1,20 @@
+
+pyyaml
+click
+httpx
+
+grpcio
+grpcio-tools
+
+chromadb
+sentence-transformers
+
+langchain
+unstructured[local-inference] # Installs extras for parsing
+
+Flask
+Flask-SocketIO
+
+openai-whisper
+sounddevice
+soundfile
