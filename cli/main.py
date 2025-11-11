@@ -1,10 +1,12 @@
 # Defines CLI commands using Click
 
-# cli/main.py
-import click
+import os
 # Need to adjust sys.path to import from parent directory
 import sys
-import os
+
+# cli/main.py
+import click
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from kaien_core.agent import Agent

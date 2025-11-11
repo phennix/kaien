@@ -24,8 +24,9 @@ llm:
 #  deepseek-r1:32b
 
 
-  model: "gpt-oss:20b" # Default model to use
-  request_timeout: 120
+#  model: "gpt-oss:20b" # Default model to use
+  model: "gemma3:12b" # Default model to use
+  request_timeout: 1200
 
 # Agent Configuration
 agent:

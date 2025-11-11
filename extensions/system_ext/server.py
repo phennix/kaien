@@ -4,11 +4,17 @@
 import grpc
 import time
 from concurrent import futures
+import sys
+import os
+
+# Add the parent directory to the path to find the 'generated' package
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+
 
 # Import generated classes
 # NOTE: You must run generate_protos.sh first
-from extensions.system_ext.generated import system_pb2, system_pb2_grpc
-
+from generated import system_pb2
+from generated import system_pb2_grpc
 
 # Service implementation
 class SystemService(system_pb2_grpc.SystemServicer):

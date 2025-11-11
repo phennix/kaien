@@ -2,8 +2,17 @@
 
 # kaien_core/mcp_client.py
 import grpc
+import sys
+import os
+
 # NOTE: You must run generate_protos.sh first
-from extensions.system_ext.generated import system_pb2, system_pb2_grpc
+# from extensions.system_ext.generated import system_pb2, system_pb2_grpc
+
+# This assumes you run the CLI from the root 'kaien' directory
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+#
+from extensions.system_ext.generated import system_pb2
+from extensions.system_ext.generated import system_pb2_grpc
 
 
 class MCPClient:
