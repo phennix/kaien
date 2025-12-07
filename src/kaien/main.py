@@ -1,21 +1,37 @@
 import typer
+import logging
 from rich.console import Console
 from rich.prompt import Prompt
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage
 
+# Import the graph (Brain) and Memory
 from kaien.agent.graph import app as agent_app
 from kaien.memory.db import MemoryEngine
 from kaien.config import settings
 
-app = typer.Typer()
+# Suppress warnings for a cleaner CLI
+logging.getLogger("langchain").setLevel(logging.ERROR)
+logging.getLogger("chromadb").setLevel(logging.ERROR)
+
+app = typer.Typer(no_args_is_help=True)
 console = Console()
+
+
+@app.callback()
+def main_callback():
+    """
+    Kaien: Ubuntu Agentic AI System.
+    """
+    pass
 
 
 @app.command()
 def chat():
-    """Start an interactive chat session with Kaien."""
+    """
+    Start an interactive chat session with Kaien.
+    """
     console.print("[bold green]Kaien System Online[/bold green]")
-    console.print(f"Model: {settings.model_name} | Shell: {'Enabled' if settings.allow_shell_execution else 'Disabled'}")
+    console.print(f"Model: {settings.llm.active_provider} | Shell: {'Enabled' if settings.system.allow_shell_execution else 'Disabled'}")
 
     memory = MemoryEngine()
     history = []  # Local session history
@@ -29,24 +45,23 @@ def chat():
 
         # Stream events from the graph
         inputs = {"messages": history}
-        final_response = ""
 
         with console.status("[bold yellow]Kaien is thinking...[/bold yellow]"):
-            for event in agent_app.stream(inputs):
-                for key, value in event.items():
-                    if key == "agent":
-                        msg = value["messages"][0]
-                        if msg.content:
-                            final_response = msg.content
-                            console.print(f"[bold green]Kaien[/bold green]: {msg.content}")
-                        history.append(msg)
-                    elif key == "tools":
-                        # Tool outputs are usually handled internally, but we can print logs here
-                        pass
-
-        # Save to memory
-        if final_response:
-            memory.add_interaction(user_input, final_response)
+            try:
+                # We iterate through the stream
+                for event in agent_app.stream(inputs):
+                    for key, value in event.items():
+                        if key == "agent":
+                            # The agent returned a message
+                            msg = value["messages"][0]
+                            if msg.content:
+                                console.print(f"[bold green]Kaien[/bold green]: {msg.content}")
+                            history.append(msg)
+                        elif key == "tools":
+                            # Tools executed (optional: log tool output here)
+                            pass
+            except Exception as e:
+                console.print(f"[bold red]Error during execution:[/bold red] {e}")
 
 
 if __name__ == "__main__":

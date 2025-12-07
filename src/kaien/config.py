@@ -1,4 +1,6 @@
 import os
+# Disable ChromaDB Telemetry to fix "ClientStartEvent" error
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
 import yaml
 from typing import Optional, Literal
 from pydantic import BaseModel
@@ -19,8 +21,12 @@ class GeminiConfig(BaseModel):
 
 class OllamaConfig(BaseModel):
     base_url: str = "http://192.168.0.111:11434"
+    # model: str = "gpt-oss:20b"
+    model: str = "embeddinggemma:300m"
+    # model: str = "qwen3:14b"
     # model: str = "llama3"
-    model: str = "hf.co/arcee-ai/Trinity-Nano-Preview-GGUF:Q4_K_M"
+    # model: str = "hf.co/arcee-ai/Trinity-Nano-Preview-GGUF:Q4_K_M"
+
 
 
 class LLMSettings(BaseModel):
@@ -33,7 +39,7 @@ class LLMSettings(BaseModel):
 class SystemSettings(BaseModel):
     allow_shell_execution: bool = False
     auto_approve_shell: bool = False
-    shell_timeout: int = 60
+    shell_timeout: int = 200
 
 
 class StorageSettings(BaseModel):
