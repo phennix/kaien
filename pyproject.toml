@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "kaien"
+version = "0.1.0"
+description = "Agentic AI System for Ubuntu"
+authors = ["Your Name <maxim.krasulin@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+# Core Framework - allowing latest stable versions
+langchain = "^0.3.0"
+langchain-community = "^0.3.0"
+langchain-core = "^0.3.0"
+langgraph = "^0.2.0"  # Significant upgrade from 0.0.10
+
+# Integrations
+langchain-openai = "^0.2.0"
+langchain-google-genai = "^2.0.0"
+chromadb = "^0.5.5"
+
+# Utilities
+typer = {extras = ["all"], version = "^0.12.0"}
+pydantic-settings = "^2.4.0"
+rich = "^13.8.0"
+pyyaml = "^6.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+kaien = "kaien.main:app"

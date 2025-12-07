@@ -1,0 +1,48 @@
+# Kaien Configuration
+
+# ------------------------------------------------------------------
+# LLM Settings
+# ------------------------------------------------------------------
+llm:
+  # Which provider to use currently.
+  # Options: "openai", "gemini", "ollama"
+  active_provider: "ollama"
+
+  openai:
+    # API Key can also be set via env var: KAIEN_LLM__OPENAI__API_KEY
+    api_key: "sk-..."
+    model: "gpt-4o"
+
+  gemini:
+    # Google AI Studio Key
+    api_key: "AIza..."
+    model: "gemini-1.5-pro-latest"
+
+  ollama:
+    # Local endpoint for Ollama
+    base_url: "http://192.168.0.111:11434"
+#    model: "llama3"
+    model: "hf.co/arcee-ai/Trinity-Nano-Preview-GGUF:Q4_K_M"
+
+# ------------------------------------------------------------------
+# System Capabilities & Safety
+# ------------------------------------------------------------------
+system:
+  # MASTER SWITCH: Allow the agent to run terminal commands
+  allow_shell_execution: true
+
+  # DANGER: If true, commands run without asking you (Headless mode)
+  auto_approve_shell: false
+
+  # Max time (seconds) a command can run before timeout
+  shell_timeout: 60
+
+# ------------------------------------------------------------------
+# Storage & Memory
+# ------------------------------------------------------------------
+storage:
+  # Where ChromaDB and logs are stored
+  data_dir: "./data"
+
+  # Semantic Search settings
+  memory_collection_name: "kaien_memory"
