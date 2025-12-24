@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+typer
+rich
+chromadb
+sqlalchemy
