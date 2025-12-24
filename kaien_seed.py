@@ -17,7 +17,7 @@ console = Console()
 app = typer.Typer()
 
 # --- Configuration ---
-# DEFAULT_MODEL = "ollama/qwen2.5-coder:32b"
+DEFAULT_MODEL = "ollama/qwen2.5-coder:32b"
 # DEFAULT_MODEL = "ollama/ministral-3:8b"
 # DEFAULT_MODEL = "ollama/ministral-3:14b"
 # DEFAULT_MODEL = "ollama/mistral-small3.2:24b"
@@ -32,12 +32,12 @@ API_BASE = "http://192.168.0.111:11434"
 # litellm._turn_on_debug()
 
 # Google models:
-DEFAULT_MODEL = "gemini/gemini-2.5-flash"
+# DEFAULT_MODEL = "gemini/gemini-2.5-flash"
 # DEFAULT_MODEL = "models/gemini-robotics-er-1.5-preview"
-api_key = "AIzaSyClZhqzJ7BGNTESt-tYIe5CNJhslfr9Dbc"
+# api_key = "AIzaSyClZhqzJ7BGNTESt-tYIe5CNJhslfr9Dbc"
 
-API_BASE = "https://generativelanguage.googleapis.com"
-os.environ["GEMINI_API_KEY"] = api_key
+# API_BASE = "https://generativelanguage.googleapis.com"
+# os.environ["GEMINI_API_KEY"] = api_key
 
 #
 #
@@ -196,7 +196,7 @@ class SeedAgent:
                 response = completion(
                     model=self.model,
                     messages=self.history,
-                    # api_base=API_BASE,
+                    api_base=API_BASE,
                     stream=False,
                     # api_key=api_key,
                     timeout=600

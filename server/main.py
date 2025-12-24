@@ -1,38 +1,21 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import os
 
-# --- Database Imports ---
-# from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-# from sqlalchemy.orm import sessionmaker
-# import chromadb
+# Import database functions and lifespan context manager
+from server.database import lifespan_db_connection, init_db
 
-# Placeholder for database engine and session
-# async_engine = None
-# AsyncSessionLocal = None
-# vector_db_client = None
+# Define the base data directory for databases as requested
+DB_PATH = "./data/kaien_db"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
-    print("Server starting up...")
-    
-    # Initialize SQLite for session history
-    # global async_engine, AsyncSessionLocal
-    # async_engine = create_async_engine("sqlite+aiosqlite:///./kaien_sessions.db", echo=True)
-    # AsyncSessionLocal = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
-    # await init_db() # Function to create tables
-
-    # Initialize ChromaDB for vector memory
-    # global vector_db_client
-    # vector_db_client = chromadb.PersistentClient(path="./kaien_vector_db")
-    # print("ChromaDB client initialized.")
-
-    yield
-
-    # Shutdown
-    print("Server shutting down...")
-    # Close database connections if necessary
+    # Use the database lifespan context manager for initialization
+    async with lifespan_db_connection(base_data_dir=DB_PATH):
+        print("Server starting up...")
+        yield
+        print("Server shutting down...")
 
 app = FastAPI(title="Kaien Server", version="0.1.0", lifespan=lifespan)
 
@@ -42,7 +25,7 @@ app.add_middleware(
     allow_origins=["*"],  # Allows all origins
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_headers=["*"],  # Allows all headers,
 )
 
 @app.get("/health")
@@ -52,9 +35,3 @@ async def health_check():
 @app.get("/")
 async def root():
     return {"status": "Kaien Nexus Online"}
-
-# Placeholder for database initialization function (e.g., creating tables)
-# async def init_db():
-#     async with async_engine.begin() as conn:
-#         # await conn.run_sync(Base.metadata.create_all) # Base would be imported from a models file
-#         pass
