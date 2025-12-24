@@ -1,33 +1,60 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-import sqlite3
-import database
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
-db_path = 'kaien.db'
-persist_directory = 'chroma_db'
+# --- Database Imports ---
+# from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+# from sqlalchemy.orm import sessionmaker
+# import chromadb
 
-database.init_sqlite_db(db_path)
-collection = database.init_chroma_db(persist_directory)
+# Placeholder for database engine and session
+# async_engine = None
+# AsyncSessionLocal = None
+# vector_db_client = None
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    print("Server starting up...")
+    
+    # Initialize SQLite for session history
+    # global async_engine, AsyncSessionLocal
+    # async_engine = create_async_engine("sqlite+aiosqlite:///./kaien_sessions.db", echo=True)
+    # AsyncSessionLocal = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
+    # await init_db() # Function to create tables
 
-class SessionData(BaseModel):
-    data: str
+    # Initialize ChromaDB for vector memory
+    # global vector_db_client
+    # vector_db_client = chromadb.PersistentClient(path="./kaien_vector_db")
+    # print("ChromaDB client initialized.")
 
-@app.get('/')
-def read_root():
-    return {'Hello': 'Kaien Server'}
+    yield
 
-@app.post('/session')
-def create_session(session_data: SessionData):
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO sessions (data) VALUES (?)', (session_data.data,))
-    conn.commit()
-    conn.close()
-    return {'message': 'Session created'}
+    # Shutdown
+    print("Server shutting down...")
+    # Close database connections if necessary
 
-@app.post('/memory')
-def add_memory(memory_data: SessionData):
-    collection.add(ids=['id1'], embeddings=[[1.0, 2.0]], metadatas=[{'source': 'user_input'}], documents=[memory_data.data])
-    return {'message': 'Memory added'}
+app = FastAPI(title="Kaien Server", version="0.1.0", lifespan=lifespan)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "message": "Kaien Server is running"}
+
+@app.get("/")
+async def root():
+    return {"status": "Kaien Nexus Online"}
+
+# Placeholder for database initialization function (e.g., creating tables)
+# async def init_db():
+#     async with async_engine.begin() as conn:
+#         # await conn.run_sync(Base.metadata.create_all) # Base would be imported from a models file
+#         pass

@@ -1,8 +1,9 @@
 import sqlite3
 from chromadb.config import Settings
-from chromadb import Collection
+from chromadb import Client, Collection
+import config
+import os
 
-# Initialize SQLite database
 def init_sqlite_db(db_path: str):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -10,9 +11,13 @@ def init_sqlite_db(db_path: str):
     conn.commit()
     conn.close()
 
-# Initialize ChromaDB vector store
-def init_chroma_db(persist_directory: str):
-    from chromadb import Client
-    client = Client(Settings(chroma_api_impl='rest', chroma_server_host='localhost', chroma_server_http_port='8000'))
+def init_chroma_db(persist_path: str):
+    db_config = config.database_config
+    client = Client(Settings(
+        chroma_api_impl=db_config['chroma_api_implementation'],
+        persist_directory=persist_path,
+        chroma_server_host='localhost' if db_config['type'] == 'remote' else None,
+        chroma_server_http_port=8000 if db_config['type'] == 'remote' else None
+    ))
     collection = client.get_or_create_collection(name='kaien-memory')
     return collection

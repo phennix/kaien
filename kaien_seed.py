@@ -8,6 +8,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.markdown import Markdown
 from litellm import completion
+import litellm
 from dotenv import load_dotenv
 
 # Load Environment
@@ -16,7 +17,7 @@ console = Console()
 app = typer.Typer()
 
 # --- Configuration ---
-DEFAULT_MODEL = "ollama/qwen2.5-coder:32b"
+# DEFAULT_MODEL = "ollama/qwen2.5-coder:32b"
 # DEFAULT_MODEL = "ollama/ministral-3:8b"
 # DEFAULT_MODEL = "ollama/ministral-3:14b"
 # DEFAULT_MODEL = "ollama/mistral-small3.2:24b"
@@ -26,8 +27,38 @@ DEFAULT_MODEL = "ollama/qwen2.5-coder:32b"
 # DEFAULT_MODEL = "ollama/qwen2.5-coder:14b"
 # DEFAULT_MODEL = "ollama/qwen2.5-coder:7b"
 # DEFAULT_MODEL = "ollama/embeddinggemma:300m"
-
 API_BASE = "http://192.168.0.111:11434"
+# api_key=""
+# litellm._turn_on_debug()
+
+# Google models:
+DEFAULT_MODEL = "gemini/gemini-2.5-flash"
+# DEFAULT_MODEL = "models/gemini-robotics-er-1.5-preview"
+api_key = "AIzaSyClZhqzJ7BGNTESt-tYIe5CNJhslfr9Dbc"
+
+API_BASE = "https://generativelanguage.googleapis.com"
+os.environ["GEMINI_API_KEY"] = api_key
+
+#
+#
+# curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent" \
+#   -H 'Content-Type: application/json' \
+#   -H 'X-goog-api-key: AIzaSyClZhqzJ7BGNTESt-tYIe5CNJhslfr9Dbc' \
+#   -X POST \
+#   -d '{
+#     "contents": [
+#       {
+#         "parts": [
+#           {
+#             "text": "Explain how AI works in a few words"
+#           }
+#         ]
+#       }
+#     ]
+#   }'
+
+
+
 
 # --- 1. The Tools (The Hands) ---
 class Tools:
@@ -165,8 +196,9 @@ class SeedAgent:
                 response = completion(
                     model=self.model,
                     messages=self.history,
-                    api_base=API_BASE,
+                    # api_base=API_BASE,
                     stream=False,
+                    # api_key=api_key,
                     timeout=600
                 )
             except Exception as e:
@@ -221,7 +253,7 @@ def start():
     console.rule("[bold blue]Kaien Construction Site (Ollama)[/bold blue]")
     console.print(f"Using Model: [green]{DEFAULT_MODEL}[/green]")
     console.print(f"API Base: [green]{API_BASE}[/green]")
-    agent = SeedAgent(model=DEFAULT_MODEL)
+    agent = SeedAgent(model=DEFAULT_MODEL,)
 
     # Initial Check
     if not os.path.exists("ARCHITECTURE.md"):
