@@ -16,12 +16,16 @@ load_dotenv()
 console = Console()
 app = typer.Typer()
 
+# DEFAULT_MODEL = "ministral-8b-latest"
+DEFAULT_MODEL = "mistral/devstral-2512"
+os.environ['MISTRAL_API_KEY'] = "Z1NRxbSFVhYR65Pzf16Fa8nq8sHB9SAh"
+
 # --- Configuration ---
 # DEFAULT_MODEL = "ollama/qwen2.5-coder:32b"
 # DEFAULT_MODEL = "ollama/ministral-3:8b"
 # DEFAULT_MODEL = "ollama/ministral-3:14b"
 # DEFAULT_MODEL = "ollama/mistral-small3.2:24b"
-DEFAULT_MODEL = "ollama/codestral:22b"
+# DEFAULT_MODEL = "ollama/codestral:22b"
 # DEFAULT_MODEL = "ollama/nemotron-3-nano:30b"
 # DEFAULT_MODEL = "ollama/cogito:32b"
 # DEFAULT_MODEL = "ollama/qwen3:14b"
@@ -186,7 +190,7 @@ class SeedAgent:
                 response = completion(
                     model=self.model,
                     messages=self.history,
-                    api_base=API_BASE,
+                    # api_base=API_BASE,
                     stream=False,
                     # max_tokens=1000, # in case of claude
                     timeout=600
