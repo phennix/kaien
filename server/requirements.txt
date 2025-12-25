@@ -3,6 +3,3 @@ uvicorn
 pydantic
 python-dotenv
 httpx
-sqlalchemy[asyncio]
-aiosqlite
-chromadb

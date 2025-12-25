@@ -17,47 +17,37 @@ console = Console()
 app = typer.Typer()
 
 # --- Configuration ---
-DEFAULT_MODEL = "ollama/qwen2.5-coder:32b"
+# DEFAULT_MODEL = "ollama/qwen2.5-coder:32b"
 # DEFAULT_MODEL = "ollama/ministral-3:8b"
 # DEFAULT_MODEL = "ollama/ministral-3:14b"
 # DEFAULT_MODEL = "ollama/mistral-small3.2:24b"
+DEFAULT_MODEL = "ollama/codestral:22b"
 # DEFAULT_MODEL = "ollama/nemotron-3-nano:30b"
 # DEFAULT_MODEL = "ollama/cogito:32b"
 # DEFAULT_MODEL = "ollama/qwen3:14b"
 # DEFAULT_MODEL = "ollama/qwen2.5-coder:14b"
+# DEFAULT_MODEL = "ollama/gemini-3-pro-preview:latest"
 # DEFAULT_MODEL = "ollama/qwen2.5-coder:7b"
 # DEFAULT_MODEL = "ollama/embeddinggemma:300m"
 API_BASE = "http://192.168.0.111:11434"
 # api_key=""
 # litellm._turn_on_debug()
 
+
+# os.environ["GEMINI_API_KEY"] = google_api_key
+# DEFAULT_MODEL = "anthropic/claude-haiku-4-5-20251001"
+# DEFAULT_MODEL = "anthropic/claude-sonnet-4-5-20250929"
+# claude_api = "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"
+# API_BASE = "http://192.168.0.111:11434"
+
 # Google models:
 # DEFAULT_MODEL = "gemini/gemini-2.5-flash"
+# DEFAULT_MODEL = "models/gemini-3-flash-preview"
 # DEFAULT_MODEL = "models/gemini-robotics-er-1.5-preview"
-# api_key = "AIzaSyClZhqzJ7BGNTESt-tYIe5CNJhslfr9Dbc"
-
+# google_api_key = "AIzaSyD1YtvaGMpvjCARbDpGmhtziSznjd6YAXM"
 # API_BASE = "https://generativelanguage.googleapis.com"
-# os.environ["GEMINI_API_KEY"] = api_key
 
-#
-#
-# curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent" \
-#   -H 'Content-Type: application/json' \
-#   -H 'X-goog-api-key: AIzaSyClZhqzJ7BGNTESt-tYIe5CNJhslfr9Dbc' \
-#   -X POST \
-#   -d '{
-#     "contents": [
-#       {
-#         "parts": [
-#           {
-#             "text": "Explain how AI works in a few words"
-#           }
-#         ]
-#       }
-#     ]
-#   }'
-
-
+# os.environ["ANTHROPIC_API_KEY"] = claude_api
 
 
 # --- 1. The Tools (The Hands) ---
@@ -198,7 +188,7 @@ class SeedAgent:
                     messages=self.history,
                     api_base=API_BASE,
                     stream=False,
-                    # api_key=api_key,
+                    # max_tokens=1000, # in case of claude
                     timeout=600
                 )
             except Exception as e:
