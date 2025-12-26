@@ -80,5 +80,35 @@ SYSTEM_TOOLS = [
                 "required": ["topic"]
             }
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "read_codebase",
+            "description": "List files or read specific code files to understand the system.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "action": {"type": "string", "enum": ["list", "read"]},
+                    "path": {"type": "string"}
+                },
+                "required": ["action"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "propose_code_change",
+            "description": "Propose a modification to a file. Requires human confirmation to apply.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "file_path": {"type": "string"},
+                    "new_content": {"type": "string", "description": "The full new content of the file"}
+                },
+                "required": ["file_path", "new_content"]
+            }
+        }
     }
 ]

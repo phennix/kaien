@@ -9,6 +9,7 @@ from modules.brain import Brain
 from modules.memory import MemoryModule
 from modules.osint import OSINTModule
 from modules.research import ResearchAgent
+from modules.developer import DeveloperAgent
 from modules.tools_schema import SYSTEM_TOOLS
 
 logger = logging.getLogger(__name__)
@@ -22,7 +23,8 @@ class MCPClient:
         self.memory = MemoryModule()
         self.osint = OSINTModule()
         self.researcher = ResearchAgent()
-        logger.info("MCP Client Loaded with Memory, OSINT, and Research")
+        self.dev = DeveloperAgent()
+        logger.info("MCP Client Loaded with Memory, OSINT, Research, and Developer")
     
     # --- Tool Implementations ---
     def _system_info(self, args: Dict[str, Any] = None) -> str:
@@ -56,6 +58,33 @@ class MCPClient:
         if not topic:
             return "Error: No topic provided for research"
         return await self.researcher.perform_research(topic)
+    
+    def _read_codebase(self, args: Dict[str, Any]) -> str:
+        """Read codebase files or list files"""
+        action = args.get("action", "")
+        path = args.get("path", "")
+        
+        if action == "list":
+            files = self.dev.list_files(path)
+            return "\n".join(files)
+        elif action == "read":
+            if not path:
+                return "Error: No file path provided"
+            content = self.dev.read_code(path)
+            return content
+        else:
+            return "Error: Invalid action. Use 'list' or 'read'"
+    
+    def _propose_code_change(self, args: Dict[str, Any]) -> str:
+        """Propose a code change but do not apply it immediately"""
+        file_path = args.get("file_path", "")
+        new_content = args.get("new_content", "")
+        
+        if not file_path or not new_content:
+            return "Error: Missing file_path or new_content"
+        
+        # Return a specific format for approval
+        return f"[APPROVAL_REQUIRED] File: {file_path}\nContent:\n{new_content}"
     
     async def process_query(self, query: str) -> str:
         """
@@ -102,6 +131,10 @@ class MCPClient:
                         return await self._run_osint_command(args)
                     elif fn_name == "deep_research":
                         return await self._deep_research(args)
+                    elif fn_name == "read_codebase":
+                        return self._read_codebase(args)
+                    elif fn_name == "propose_code_change":
+                        return self._propose_code_change(args)
                     else:
                         return f"Error: Unknown tool '{fn_name}'"
                 except json.JSONDecodeError as e:

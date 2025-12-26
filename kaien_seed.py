@@ -18,7 +18,7 @@ app = typer.Typer()
 
 # DEFAULT_MODEL = "ministral-8b-latest"
 DEFAULT_MODEL = "mistral/devstral-2512"
-os.environ['MISTRAL_API_KEY'] = ""
+os.environ['MISTRAL_API_KEY'] = "Z1NRxbSFVhYR65Pzf16Fa8nq8sHB9SAh"
 
 # --- Configuration ---
 # DEFAULT_MODEL = "ollama/qwen2.5-coder:32b"
@@ -34,6 +34,8 @@ os.environ['MISTRAL_API_KEY'] = ""
 # DEFAULT_MODEL = "ollama/qwen2.5-coder:7b"
 # DEFAULT_MODEL = "ollama/embeddinggemma:300m"
 API_BASE = "http://192.168.0.111:11434"
+
+
 # api_key=""
 # litellm._turn_on_debug()
 
@@ -41,14 +43,14 @@ API_BASE = "http://192.168.0.111:11434"
 # os.environ["GEMINI_API_KEY"] = google_api_key
 # DEFAULT_MODEL = "anthropic/claude-haiku-4-5-20251001"
 # DEFAULT_MODEL = "anthropic/claude-sonnet-4-5-20250929"
-# claude_api = ""
+# claude_api = "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"
 # API_BASE = "http://192.168.0.111:11434"
 
 # Google models:
 # DEFAULT_MODEL = "gemini/gemini-2.5-flash"
 # DEFAULT_MODEL = "models/gemini-3-flash-preview"
 # DEFAULT_MODEL = "models/gemini-robotics-er-1.5-preview"
-# google_api_key = ""
+# google_api_key = "AIzaSyD1YtvaGMpvjCARbDpGmhtziSznjd6YAXM"
 # API_BASE = "https://generativelanguage.googleapis.com"
 
 # os.environ["ANTHROPIC_API_KEY"] = claude_api
@@ -109,9 +111,9 @@ class SeedAgent:
         self.tools = Tools()
         self.system_prompt = """You are Kaien-Seed, an autonomous construction agent.
             Your goal is to build the Kaien system by reading the 'ARCHITECTURE.md' and writing Python code.
-            
+
             You have access to tools. To use a tool, you MUST output a JSON block strictly in this format:
-            
+
             ```json
             {
                 "tool": "write_file",
@@ -121,7 +123,7 @@ class SeedAgent:
                 }
             }
             ```
-            
+
             Available Tools:
                 write_file(path, content) - Create code files.
                 read_file(path) - Read requirements or code.
@@ -159,11 +161,11 @@ class SeedAgent:
         """Robust parsing for local model output"""
         try:
             # 1. Try finding markdown json blocks
-            if "json" in content: # Split byjson and take the second part, then split by json_str = content.split("json")[1].split("")[0].strip() elif "" in content:
-            # Sometimes models forget 'json' but use backticks
+            if "json" in content:  # Split byjson and take the second part, then split by json_str = content.split("json")[1].split("")[0].strip() elif "" in content:
+                # Sometimes models forget 'json' but use backticks
                 json_str = content.split("```json")[1].split("```")[0].strip()
             else:
-            # 2. Fallback: Try finding raw JSON structure
+                # 2. Fallback: Try finding raw JSON structure
                 start = content.find("{")
                 end = content.rfind("}") + 1
                 if start != -1 and end != -1:
@@ -173,9 +175,8 @@ class SeedAgent:
 
             return json.loads(json_str)
         except Exception as e:
-             # console.print(f"[dim]JSON Parsing failed: {e}[/dim]")
-             return None
-
+            # console.print(f"[dim]JSON Parsing failed: {e}[/dim]")
+            return None
 
     async def chat(self, user_input: str):
         self.history.append({"role": "user", "content": user_input})
@@ -240,6 +241,7 @@ class SeedAgent:
 
     # --- 3. Entry Point ---
 
+
 @app.command()
 def start():
     """Start the Kaien Construction Site."""
@@ -247,7 +249,7 @@ def start():
     console.rule("[bold blue]Kaien Construction Site (Ollama)[/bold blue]")
     console.print(f"Using Model: [green]{DEFAULT_MODEL}[/green]")
     console.print(f"API Base: [green]{API_BASE}[/green]")
-    agent = SeedAgent(model=DEFAULT_MODEL,)
+    agent = SeedAgent(model=DEFAULT_MODEL, )
 
     # Initial Check
     if not os.path.exists("ARCHITECTURE.md"):

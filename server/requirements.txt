@@ -12,3 +12,5 @@ duckduckgo-search
 beautifulsoup4
 html2text
 aiohttp
+docker
+gitpython
