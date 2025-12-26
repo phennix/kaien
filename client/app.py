@@ -1,3 +1,5 @@
+"""Kaien Web Client - Flask interface"""
+
 from flask import Flask, render_template, request, jsonify
 import httpx
 import json
@@ -9,6 +11,7 @@ SERVER_URL = "http://localhost:8000"
 
 @app.route('/')
 def home():
+    """Main dashboard page"""
     return render_template('index.html')
 
 @app.route('/api/tools')
@@ -48,6 +51,25 @@ def health():
             response = client.get(f"{SERVER_URL}/health")
             response.raise_for_status()
             return response.json()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    """Handle chat messages"""
+    try:
+        data = request.json
+        message = data.get('message', '')
+        
+        # For now, simple echo response
+        # In Phase 2, this will connect to the LLM router
+        response_message = f"Received: {message}"
+        
+        return jsonify({
+            "status": "success",
+            "response": response_message,
+            "source": "echo"  # Will be "llm" in Phase 2
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

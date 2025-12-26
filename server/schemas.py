@@ -53,3 +53,40 @@ class MCPToolDefinition(BaseModel):
     parameters: Dict[str, Dict[str, Any]]
     returns: Dict[str, Any]
     enabled: bool = True
+
+
+class AgentRequest(BaseModel):
+    """Request from agent to execute action"""
+    agent_id: str
+    action: str
+    parameters: Dict[str, Any]
+    context: Optional[Dict] = None
+
+
+class AgentResponse(BaseModel):
+    """Response from agent action execution"""
+    success: bool
+    result: Optional[Any] = None
+    error: Optional[str] = None
+    metadata: Optional[Dict] = None
+
+
+class SessionCreate(BaseModel):
+    """Create a new session"""
+    session_id: Optional[str] = None
+    initial_context: Optional[Dict] = None
+
+
+class SessionQuery(BaseModel):
+    """Query session information"""
+    session_id: str
+    limit: int = 50
+
+
+class SessionState(BaseModel):
+    """Session state information"""
+    session_id: str
+    status: str
+    created_at: str
+    last_activity: str
+    context: Optional[Dict] = None

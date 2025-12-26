@@ -81,25 +81,36 @@ class MCPClient:
             }
     
     async def process_query(self, query: str) -> str:
-        """Process a natural language query using MCP"""
+        """Process a natural language query using MCP
+        
+        Phase 1 Logic:
+        - If query starts with '/', treat as tool command
+        - Otherwise, just echo
+        """
         try:
-            # Simple query processing - could be enhanced with NLP
-            if "tool" in query.lower() or "command" in query.lower():
-                # Try to extract tool and args from query
-                parts = query.split()
-                if len(parts) >= 2:
-                    tool_name = parts[1]
-                    args = {"query": query}
-                    result = await self.send_command(tool_name, args)
-                    return json.dumps(result, indent=2)
-            
-            # Default response
-            return json.dumps({
-                "status": "info",
-                "message": f"Query received: {query}",
-                "available_tools": list(self.registry.keys())
-            }, indent=2)
-            
+            # Phase 1 Logic: Check if query starts with '/'
+            if query.startswith('/'):
+                # Extract tool command (remove '/' prefix)
+                command_parts = query[1:].strip().split()
+                if not command_parts:
+                    return json.dumps({
+                        "status": "error",
+                        "error": "Empty command after '/'"
+                    }, indent=2)
+                
+                tool_name = command_parts[0]
+                args = {"query": query, "command": " ".join(command_parts[1:])}
+                
+                result = await self.send_command(tool_name, args)
+                return json.dumps(result, indent=2)
+            else:
+                # Phase 1 Logic: Otherwise, just echo
+                return json.dumps({
+                    "status": "echo",
+                    "message": query,
+                    "available_tools": list(self.registry.keys())
+                }, indent=2)
+        
         except Exception as e:
             return json.dumps({
                 "status": "error",
@@ -160,9 +171,16 @@ if __name__ == "__main__":
         result = await client.send_command("add", {"a": 5, "b": 3})
         print("Add result:", result)
         
-        # Test query processing
-        query_result = await client.process_query("What tools are available?")
-        print("Query result:", query_result)
+        # Test query processing with Phase 1 logic
+        print("\nTesting Phase 1 Logic:")
+        
+        # Test tool command (starts with '/')
+        query_result = await client.process_query("/shell ls -la")
+        print("Tool command result:", query_result)
+        
+        # Test echo (doesn't start with '/')
+        query_result = await client.process_query("Hello, world!")
+        print("Echo result:", query_result)
         
         # Test remote execution
         result = await client.send_command("shell", {"command": "ls"})

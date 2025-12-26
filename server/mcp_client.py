@@ -12,7 +12,7 @@ class MCPClient:
     def __init__(self, base_url: str = "http://localhost:8000"):
         self.base_url = base_url
         self.client = httpx.AsyncClient()
-        
+    
     async def get_tools(self) -> Dict[str, MCPToolDefinition]:
         """Get available tools from MCP server"""
         try:
