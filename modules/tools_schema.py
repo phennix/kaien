@@ -1,4 +1,4 @@
-"""Tool definitions for LLM tool calling - Phase 4"""
+"""Tool definitions for LLM tool calling - Phase 5"""
 
 SYSTEM_TOOLS = [
     {
@@ -85,12 +85,12 @@ SYSTEM_TOOLS = [
         "type": "function",
         "function": {
             "name": "read_codebase",
-            "description": "List files or read specific code files to understand the system.",
+            "description": "List files or read specific code files to understand the system structure.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "action": {"type": "string", "enum": ["list", "read"]},
-                    "path": {"type": "string"}
+                    "path": {"type": "string", "description": "File path (for read) or Directory path (for list). Default '.'"}
                 },
                 "required": ["action"]
             }
@@ -100,7 +100,7 @@ SYSTEM_TOOLS = [
         "type": "function",
         "function": {
             "name": "propose_code_change",
-            "description": "Propose a modification to a file. Requires human confirmation to apply.",
+            "description": "Propose a modification to a source code file. This will NOT execute immediately; it waits for approval.",
             "parameters": {
                 "type": "object",
                 "properties": {

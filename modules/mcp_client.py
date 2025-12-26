@@ -1,4 +1,4 @@
-"""MCP Client - Orchestrator with LLM integration - Phase 4"""
+"""MCP Client - Orchestrator with LLM integration - Phase 5"""
 
 import json
 import platform
@@ -65,13 +65,11 @@ class MCPClient:
         path = args.get("path", "")
         
         if action == "list":
-            files = self.dev.list_files(path)
-            return "\n".join(files)
+            return self.dev.list_files(path)
         elif action == "read":
             if not path:
                 return "Error: No file path provided"
-            content = self.dev.read_code(path)
-            return content
+            return self.dev.read_file(path)
         else:
             return "Error: Invalid action. Use 'list' or 'read'"
     
@@ -84,13 +82,13 @@ class MCPClient:
             return "Error: Missing file_path or new_content"
         
         # Return a specific format for approval
-        return f"[APPROVAL_REQUIRED] File: {file_path}\nContent:\n{new_content}"
+        return f"[APPROVAL_REQUIRED] I propose updating {file_path}. Please confirm."
     
     async def process_query(self, query: str) -> str:
         """
         Process query through LLM and execute tools if requested.
         
-        Phase 4 Logic:
+        Phase 5 Logic:
         1. Send query to LLM with tool definitions
         2. If LLM requests tool execution, execute it
         3. Otherwise return LLM response directly
