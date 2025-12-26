@@ -55,11 +55,11 @@ def health_check():
     return {"status": "ok", "db": "connected" if db_client else "error"}
 
 @app.post("/chat", response_model=AgentResponse)
-def chat_endpoint(request: AgentRequest):
+async def chat_endpoint(request: AgentRequest):
     if not mcp:
         raise HTTPException(status_code=500, detail="MCP Agent not initialized")
     
-    response_text = mcp.process_query(request.query)
+    response_text = await mcp.process_query(request.query)
     return AgentResponse(
         status="success",
         result=response_text
