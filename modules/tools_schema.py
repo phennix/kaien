@@ -1,12 +1,15 @@
-"""Tool definitions for LLM tool calling"""
-
+# Define tools in the format expected by LiteLLM/Ollama
 SYSTEM_TOOLS = [
     {
         "type": "function",
         "function": {
             "name": "system_info",
-            "description": "Get details about the server OS and Python version.",
-            "parameters": {}
+            "description": "Returns the OS version, platform information, and Python version of the server.",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
         }
     }
 ]

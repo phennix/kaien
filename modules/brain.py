@@ -1,55 +1,38 @@
-"""Brain module - LLM adapter for Kaien system"""
-
+import os
 from litellm import acompletion
 from shared.config import Config
-from typing import List, Dict, Any, Optional
-import logging
-
-logger = logging.getLogger(__name__)
 
 class Brain:
-    """Wrapper around LiteLLM for async chat completions"""
-    
     def __init__(self):
-        """Initialize brain with configuration"""
-        self.config = Config()
-        if self.config.DEBUG:
-            logger.setLevel(logging.DEBUG)
-            logger.debug(f"Brain initialized with model: {self.config.LLM_MODEL}")
-    
-    async def think(self, messages: List[Dict[str, str]], tools: List[Dict[str, Any]] = None) -> Dict[str, Any]:
-        """Process messages through LLM with optional tools"""
-        
-        # Prepare parameters
-        params = {
-            "model": self.config.LLM_MODEL,
-            "messages": messages,
-            "base_url": self.config.LLM_BASE_URL
+        # Default System Prompt to govern behavior
+        self.system_prompt = {
+            "role": "system",
+            "content": (
+                "You are Kaien, an intelligent AI assistant. "
+                "1. If the user asks a question, answer it directly. "
+                "2. ONLY use tools if the user explicitly asks for system information or an action. "
+                "3. Do not hallucinate tool calls."
+            )
         }
+
+    async def think(self, messages: list, tools: list = None):
+        """
+        Executes the LLM inference.
+        """
+        # Prepend system prompt to the conversation
+        full_history = [self.system_prompt] + messages
         
-        # Add tools if provided
-        if tools:
-            params["tools"] = tools
-        
+        print(f"DEBUG: Sending {len(full_history)} messages to model {Config.LLM_MODEL}")
+
         try:
-            # Call LiteLLM async completion
-            response = await acompletion(**params)
-            
-            if self.config.DEBUG:
-                logger.debug(f"LLM Response: {response}")
-            
+            response = await acompletion(
+                model=Config.LLM_MODEL,
+                messages=full_history,
+                api_base=Config.LLM_BASE_URL,
+                tools=tools,
+                tool_choice="auto", # Let model decide between text or tool
+            )
             return response
-        
         except Exception as e:
-            logger.error(f"Error in Brain.think: {str(e)}")
-            raise
-    
-    async def chat(self, message: str, system_prompt: str = "You are a helpful AI assistant") -> str:
-        """Simple chat interface"""
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": message}
-        ]
-        
-        response = await self.think(messages)
-        return response.choices[0].message.content
+            print(f"CRITICAL LLM ERROR: {e}")
+            raise e
