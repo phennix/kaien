@@ -18,7 +18,7 @@ app = typer.Typer()
 
 # DEFAULT_MODEL = "ministral-8b-latest"
 DEFAULT_MODEL = "mistral/devstral-2512"
-os.environ['MISTRAL_API_KEY'] = "Z1NRxbSFVhYR65Pzf16Fa8nq8sHB9SAh"
+os.environ['MISTRAL_API_KEY'] = ""
 
 # --- Configuration ---
 # DEFAULT_MODEL = "ollama/qwen2.5-coder:32b"
@@ -41,14 +41,14 @@ API_BASE = "http://192.168.0.111:11434"
 # os.environ["GEMINI_API_KEY"] = google_api_key
 # DEFAULT_MODEL = "anthropic/claude-haiku-4-5-20251001"
 # DEFAULT_MODEL = "anthropic/claude-sonnet-4-5-20250929"
-# claude_api = "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"
+# claude_api = ""
 # API_BASE = "http://192.168.0.111:11434"
 
 # Google models:
 # DEFAULT_MODEL = "gemini/gemini-2.5-flash"
 # DEFAULT_MODEL = "models/gemini-3-flash-preview"
 # DEFAULT_MODEL = "models/gemini-robotics-er-1.5-preview"
-# google_api_key = "AIzaSyD1YtvaGMpvjCARbDpGmhtziSznjd6YAXM"
+# google_api_key = ""
 # API_BASE = "https://generativelanguage.googleapis.com"
 
 # os.environ["ANTHROPIC_API_KEY"] = claude_api
