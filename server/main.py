@@ -1,108 +1,70 @@
-"""Kaien Nexus - Central orchestration server with MCP integration"""
+import sys
+import os
+from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+# --- MAGIC IMPORT FIX ---
+# Allow importing from parent directory (to see 'modules')
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from .api import router as api_router
-from .state import state
-from .config import config
-from .mcp_client import mcp_client
-from .agent_client import agent_client
-import logging
-import uvicorn
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Relative imports within 'server/' package
+from database import init_db
+from schemas import AgentRequest, AgentResponse
 
-app = FastAPI(
-    title="Kaien Nexus",
-    version="0.1.0",
-    description="Central orchestration server for Kaien autonomous system with MCP support"
-)
+# Import from sibling 'modules/' package
+try:
+    from modules.mcp_client import MCPClient
+except ImportError:
+    # Fallback if running from root
+    from core.modules.mcp_client import MCPClient
 
-# Configure CORS
+# Global State
+mcp = None
+db_client = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    global mcp, db_client
+    print("--- KAIEN SYSTEM STARTUP ---")
+    db_client = init_db("./data/kaien_db")
+    mcp = MCPClient()
+    yield
+    # Shutdown
+    print("--- KAIEN SYSTEM SHUTDOWN ---")
+
+app = FastAPI(lifespan=lifespan)
+
+# CORS - Allow Client (Port 5000) to talk to Server (Port 8000)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
-# Include API routes
-app.include_router(api_router)
-
-
 @app.get("/")
-async def root():
-    """Root endpoint showing system status"""
-    return {
-        "status": "Kaien Nexus Online",
-        "tools": list(state.tools.keys()),
-        "sessions": len(state.active_sessions),
-        "modules": config.get("modules", {}),
-        "mcp_enabled": True
-    }
-
+def read_root():
+    return {"status": "Kaien Nexus Online"}
 
 @app.get("/health")
-async def health():
-    """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "tool_count": len(state.tools),
-        "session_count": len(state.active_sessions),
-        "mcp_status": "connected"
-    }
+def health_check():
+    return {"status": "ok", "db": "connected" if db_client else "error"}
 
-
-@app.get("/config")
-async def get_config():
-    """Get current configuration"""
-    return {
-        "config": config.config.dict(),
-        "environment": {
-            "host": config.get("host"),
-            "port": config.get("port"),
-            "debug": config.get("debug")
-        }
-    }
-
-
-@app.get("/mcp/tools")
-async def mcp_tools():
-    """Get MCP-compatible tools"""
-    tools = []
-    for tool_name, tool_info in state.tools.items():
-        tools.append({
-            "name": tool_name,
-            "description": tool_info.get("description", ""),
-            "parameters": tool_info.get("parameters", {})
-        })
+@app.post("/chat", response_model=AgentResponse)
+def chat_endpoint(request: AgentRequest):
+    if not mcp:
+        raise HTTPException(status_code=500, detail="MCP Agent not initialized")
     
-    return {"mcp_tools": tools, "count": len(tools)}
-
-
-@app.on_event("startup")
-async def startup_event():
-    """Startup event handler"""
-    logger.info("Kaien Nexus starting up...")
-    logger.info(f"Configuration: host={config.get('host')}, port={config.get('port')}")
-    logger.info(f"Database: {config.get('db_path')}")
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Shutdown event handler"""
-    logger.info("Kaien Nexus shutting down...")
-    await mcp_client.close()
-    await agent_client.close()
-
+    response_text = mcp.process_query(request.query)
+    return AgentResponse(
+        status="success",
+        result=response_text
+    )
 
 if __name__ == "__main__":
-    uvicorn.run(
-        app,
-        host=config.get("host"),
-        port=config.get("port"),
-        reload=config.get("debug")
-    )
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

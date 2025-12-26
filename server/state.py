@@ -1,9 +1,9 @@
 """State management for Kaien system"""
 
 from typing import Dict, Any, List
-from .database import KaienDatabase
-from .schemas import ToolDefinition
-from .config import config
+import database
+import schemas
+import config
 import logging
 
 logger = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class KaienState:
     def __init__(self):
-        self.db = KaienDatabase(db_path=config.get("db_path", "kaien.db"))
+        self.db = database.KaienDatabase(db_path=config.config.get("db_path", "kaien.db"))
         self.active_sessions: Dict[str, Dict] = {}
         self._load_tools()
     
@@ -21,9 +21,9 @@ class KaienState:
         self.tools = {tool["name"]: tool for tool in tools_data}
         logger.info(f"Loaded {len(self.tools)} tools from database")
     
-    def register_tool(self, tool: ToolDefinition):
+    def register_tool(self, tool: schemas.ToolDefinition):
         """Register a new tool"""
-        tool_dict = tool.dict() if isinstance(tool, ToolDefinition) else tool
+        tool_dict = tool.dict() if isinstance(tool, schemas.ToolDefinition) else tool
         self.db.register_tool(
             tool_dict["name"],
             tool_dict["description"],
