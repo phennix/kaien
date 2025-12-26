@@ -1,4 +1,4 @@
-"""Tool definitions for LLM tool calling - Phase 3"""
+"""Tool definitions for LLM tool calling - Phase 4"""
 
 SYSTEM_TOOLS = [
     {
@@ -61,6 +61,23 @@ SYSTEM_TOOLS = [
                     }
                 },
                 "required": ["command"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "deep_research",
+            "description": "Perform comprehensive web research on a topic. Use this for questions requiring current events or detailed study.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "topic": {
+                        "type": "string",
+                        "description": "The research topic"
+                    }
+                },
+                "required": ["topic"]
             }
         }
     }

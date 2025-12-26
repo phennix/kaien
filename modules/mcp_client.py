@@ -1,4 +1,4 @@
-"""MCP Client - Orchestrator with LLM integration - Phase 3"""
+"""MCP Client - Orchestrator with LLM integration - Phase 4"""
 
 import json
 import platform
@@ -8,6 +8,7 @@ from typing import Dict, Any
 from modules.brain import Brain
 from modules.memory import MemoryModule
 from modules.osint import OSINTModule
+from modules.research import ResearchAgent
 from modules.tools_schema import SYSTEM_TOOLS
 
 logger = logging.getLogger(__name__)
@@ -20,7 +21,8 @@ class MCPClient:
         self.brain = Brain()
         self.memory = MemoryModule()
         self.osint = OSINTModule()
-        logger.info("MCP Client Loaded with Memory & OSINT")
+        self.researcher = ResearchAgent()
+        logger.info("MCP Client Loaded with Memory, OSINT, and Research")
     
     # --- Tool Implementations ---
     def _system_info(self, args: Dict[str, Any] = None) -> str:
@@ -48,11 +50,18 @@ class MCPClient:
             return "Error: No command provided for OSINT"
         return await self.osint.run_command(command)
     
+    async def _deep_research(self, args: Dict[str, Any]) -> str:
+        """Perform deep research on a topic"""
+        topic = args.get("topic", "")
+        if not topic:
+            return "Error: No topic provided for research"
+        return await self.researcher.perform_research(topic)
+    
     async def process_query(self, query: str) -> str:
         """
         Process query through LLM and execute tools if requested.
         
-        Phase 3 Logic:
+        Phase 4 Logic:
         1. Send query to LLM with tool definitions
         2. If LLM requests tool execution, execute it
         3. Otherwise return LLM response directly
@@ -91,6 +100,8 @@ class MCPClient:
                         return self._recall_info(args)
                     elif fn_name == "run_osint_command":
                         return await self._run_osint_command(args)
+                    elif fn_name == "deep_research":
+                        return await self._deep_research(args)
                     else:
                         return f"Error: Unknown tool '{fn_name}'"
                 except json.JSONDecodeError as e:

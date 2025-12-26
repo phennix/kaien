@@ -8,3 +8,7 @@ sqlite3
 chromadb
 langgraph
 litellm
+duckduckgo-search
+beautifulsoup4
+html2text
+aiohttp
