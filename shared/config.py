@@ -13,8 +13,8 @@ class Config:
     
     # LLM Configuration
     LLM_BASE_URL = os.getenv('LLM_BASE_URL', 'http://192.168.0.111:11434')
-    # LLM_MODEL = os.getenv('LLM_MODEL', 'ollama/qwen2.5-coder:32b')
-    LLM_MODEL = os.getenv('LLM_MODEL', 'ollama/ministral-3:14b')
+    LLM_MODEL = os.getenv('LLM_MODEL', 'ollama/qwen2.5-coder:32b')
+    # LLM_MODEL = os.getenv('LLM_MODEL', 'ollama/ministral-3:14b')
 
     # Debug mode
     DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
